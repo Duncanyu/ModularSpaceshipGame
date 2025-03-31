@@ -10865,6 +10865,7 @@ GameObject:
   - component: {fileID: 1373427006}
   - component: {fileID: 1373427005}
   - component: {fileID: 1373427008}
+  - component: {fileID: 1373427009}
   m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
@@ -10983,6 +10984,20 @@ MonoBehaviour:
   - {fileID: 827767425320826344, guid: e9341b748853ec74b9355712788c7689, type: 3}
   tilePlacer: {fileID: 1647680187}
   toggleKey: 98
+--- !u!114 &1373427009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373427003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1001 &1375792918
 PrefabInstance:
   m_ObjectHideFlags: 0

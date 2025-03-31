@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Beveled Square_0: 1696374658347897495
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
