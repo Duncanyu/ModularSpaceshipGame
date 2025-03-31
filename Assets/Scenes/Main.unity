@@ -12726,6 +12726,9 @@ MonoBehaviour:
   tilePrefab: {fileID: 2625143353283554468, guid: 3ba1cb08306ea1549884889aa2da752e, type: 3}
   buildUI: {fileID: 1373427003}
   toggleVisualKey: 282
+  mirrorKey: 109
+  clearKey: 99
+  mirrorIndicator: {fileID: 0}
 --- !u!4 &1647680188
 Transform:
   m_ObjectHideFlags: 0
@@ -14102,8 +14105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9b56e7c8fc594594c79aa3991f4ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  rotationSpeed: 200
+  moveSpeed: 110
+  rotationSpeed: 90
   drag: 1
   angularDrag: 1
 --- !u!61 &1846397311

@@ -2,22 +2,10 @@ using UnityEngine;
 
 public class StandardThruster : EngineBase
 {
-    public float thrustSpeedPercent = 0.1f;
-    public float turnSpeedPercent = 0.1f;
     public ParticleSystem thrustEffect;
     public AudioSource thrustSound;
 
     private bool isThrusting;
-
-    public override float GetSpeedContribution(float maxSpeed)
-    {
-        return maxSpeed * thrustSpeedPercent;
-    }
-
-    public override float GetTurnContribution(float maxTurnSpeed)
-    {
-        return maxTurnSpeed * turnSpeedPercent;
-    }
 
     void Update()
     {

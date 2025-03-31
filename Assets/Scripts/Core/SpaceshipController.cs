@@ -8,6 +8,9 @@ public class SpaceshipController : MonoBehaviour
     public float drag = 2f;
     public float angularDrag = 2f;
 
+    private float baseMoveSpeed;
+    private float baseRotationSpeed;
+
     private Rigidbody2D rb;
     private float rotationInput;
     private float thrustInput;
@@ -19,6 +22,25 @@ public class SpaceshipController : MonoBehaviour
         rb.linearDamping = drag;
         rb.angularDamping = angularDrag;
         engines.AddRange(GetComponentsInChildren<EngineBase>());
+
+        baseMoveSpeed = moveSpeed;
+        baseRotationSpeed = rotationSpeed;
+    }
+
+    public void RegisterEngine(EngineBase engine)
+    {
+        if (!engines.Contains(engine))
+        {
+            engines.Add(engine);
+        }
+    }
+
+    public void UnregisterEngine(EngineBase engine)
+    {
+        if (engines.Contains(engine))
+        {
+            engines.Remove(engine);
+        }
     }
 
     void Update()
@@ -38,37 +60,13 @@ public class SpaceshipController : MonoBehaviour
             turnMultiplier += engine.GetTurnContribution(1f);
         }
 
-        float actualMoveSpeed = moveSpeed * thrustMultiplier;
-        float actualRotationSpeed = rotationSpeed * turnMultiplier;
+        moveSpeed = Mathf.Min(baseMoveSpeed * thrustMultiplier, baseMoveSpeed);
+        rotationSpeed = Mathf.Min(baseRotationSpeed * turnMultiplier, baseRotationSpeed);
 
-        float rotationAmount = rotationInput * actualRotationSpeed * Time.fixedDeltaTime;
+        float rotationAmount = rotationInput * rotationSpeed * Time.fixedDeltaTime;
         rb.MoveRotation(rb.rotation + rotationAmount);
 
         Vector2 direction = transform.up * thrustInput;
-        rb.AddForce(direction * actualMoveSpeed);
-
-        if (thrustInput > 0f)
-        {
-            foreach (var engine in engines)
-            {
-                engine.ApplyThrust();
-            }
-        }
+        rb.AddForce(direction * moveSpeed);
     }
-
-    public void RegisterEngine(EngineBase engine)
-    {
-        if (!engines.Contains(engine))
-        {
-            engines.Add(engine);
-        }
-    }
-
-    public void UnregisterEngine(EngineBase engine)
-    {
-        if (engines.Contains(engine))
-        {
-            engines.Remove(engine);
-        }
-    }
-}
+} 

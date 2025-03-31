@@ -8,16 +8,25 @@ public class TilePlacer : MonoBehaviour
     public TileComponent tilePrefab;
     public GameObject buildUI;
     public KeyCode toggleVisualKey = KeyCode.I;
+    public KeyCode mirrorKey = KeyCode.M;
+    public KeyCode clearKey = KeyCode.C;
 
     private TileComponent previewTile;
     private float currentAngle = 0f;
     private bool tileVisualsVisible = true;
+    private bool mirrorMode = false;
+    private float lastClearPressTime = -1f;
+    private float clearConfirmDelay = 0.4f;
+
+    public GameObject mirrorIndicator;
 
     void Start()
     {
         SetTileToPlace(null);
         if (buildUI != null)
             buildUI.SetActive(false);
+        if (mirrorIndicator != null)
+            mirrorIndicator.SetActive(false);
     }
 
     void Update()
@@ -32,12 +41,45 @@ public class TilePlacer : MonoBehaviour
 
         if (Input.GetKeyDown(toggleVisualKey))
         {
-            Debug.Log("Apple");
+            Debug.Log("Toggling Visuals");
             tileVisualsVisible = !tileVisualsVisible;
             ToggleAllTileVisuals(tileVisualsVisible);
         }
 
-        if (!buildUI.activeSelf || tilePrefab == null) return;
+        if (!buildUI.activeSelf) return;
+
+
+        if (Input.GetKeyDown(mirrorKey))
+        {
+            mirrorMode = !mirrorMode;
+            Debug.Log("Mirror mode toggled: " + mirrorMode);
+            if (mirrorIndicator != null)
+                mirrorIndicator.SetActive(mirrorMode);
+        }
+
+        if (Input.GetKeyDown(clearKey))
+        {
+            if (Time.time - lastClearPressTime <= clearConfirmDelay)
+            {
+                Debug.Log("Clearing all tiles");
+                foreach (Transform child in gridManager.transform)
+                {
+                    TileSlot slot = child.GetComponent<TileSlot>();
+                    if (slot != null)
+                    {
+                        slot.RemoveComponent();
+                    }
+                }
+                lastClearPressTime = -1f;
+            }
+            else
+            {
+                Debug.Log("Press again quickly to confirm clear");
+                lastClearPressTime = Time.time;
+            }
+        }
+
+        if (tilePrefab == null) return;
 
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             return;
@@ -67,6 +109,15 @@ public class TilePlacer : MonoBehaviour
                 if (targetSlot.IsOccupied)
                 {
                     targetSlot.RemoveComponent();
+
+                    if (mirrorMode)
+                    {
+                        TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
+                        if (mirrorSlot != null && mirrorSlot.IsOccupied)
+                        {
+                            mirrorSlot.RemoveComponent();
+                        }
+                    }
                 }
             }
             else if (Input.GetMouseButtonDown(0))
@@ -74,6 +125,15 @@ public class TilePlacer : MonoBehaviour
                 if (!targetSlot.IsOccupied && targetSlot.CanPlace(tilePrefab))
                 {
                     PlaceTile(targetSlot);
+
+                    if (mirrorMode)
+                    {
+                        TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
+                        if (mirrorSlot != null && !mirrorSlot.IsOccupied && mirrorSlot.CanPlace(tilePrefab))
+                        {
+                            PlaceTile(mirrorSlot);
+                        }
+                    }
                 }
             }
         }
@@ -115,6 +175,19 @@ public class TilePlacer : MonoBehaviour
         }
 
         return closest;
+    }
+
+    TileSlot FindMirrorSlot(TileSlot originalSlot)
+    {
+        foreach (Transform child in gridManager.transform)
+        {
+            TileSlot slot = child.GetComponent<TileSlot>();
+            if (slot != null && slot.gridPosition.x == -originalSlot.gridPosition.x && slot.gridPosition.y == originalSlot.gridPosition.y)
+            {
+                return slot;
+            }
+        }
+        return null;
     }
 
     void PlaceTile(TileSlot slot)

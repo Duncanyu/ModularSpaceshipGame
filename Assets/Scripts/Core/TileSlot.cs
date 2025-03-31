@@ -44,12 +44,27 @@ public class TileSlot : MonoBehaviour
     {
         if (IsOccupied) return false;
 
-        // Uncomment these checks once the specific tile classes are implemented
-        // if (isComputerSlot && !(component is ComputerTile)) return false;
-        // if (isEngineSlot && !(component is EngineTile)) return false;
-        // if (isReactorSlot && !(component is ReactorTile)) return false;
+        if (component is EngineTile)
+        {
+            return isEngineSlot;
+        }
 
-        return true;
+        // if (component is ComputerTile)
+        // {
+        //     return isComputerSlot;
+        // }
+
+        // if (component is ReactorTile)
+        // {
+        //     return isReactorSlot || (!isComputerSlot && !isEngineSlot);
+        // }
+
+        if (!isComputerSlot && !isEngineSlot && !isReactorSlot)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public void PlaceComponent(TileComponent component)
@@ -59,16 +74,6 @@ public class TileSlot : MonoBehaviour
             currentComponent = Instantiate(component, transform.position, Quaternion.identity, transform);
             currentComponent.AssignToSlot(this);
             UpdateSlotColor();
-
-            // if (isComputerSlot && currentComponent is DamageableTileBase dtComputer)
-            // {
-            //     dtComputer.maxDurability += 10;
-            //     dtComputer.durability += 10;
-            // }
-            // else if (isReactorSlot && currentComponent is ReactorTile rt)
-            // {
-            //     rt.energyGeneration += 2;
-            // }
         }
     }
 
