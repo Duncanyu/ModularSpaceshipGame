@@ -1,0 +1,154 @@
+using UnityEngine;
+
+public class TileSlot : MonoBehaviour
+{
+    public Vector2Int gridPosition;
+    public TileComponent currentComponent;
+
+    public bool isComputerSlot;
+    public bool isEngineSlot;
+    public bool isReactorSlot;
+
+    public Color emptyColor = Color.white;
+    public Color filledColor = Color.green;
+    public Color computerColor = Color.cyan;
+    public Color engineColor = Color.yellow;
+    public Color reactorColor = Color.red;
+
+    private SpriteRenderer slotRenderer;
+    private SpriteRenderer squareRenderer;
+
+    public bool IsOccupied => currentComponent != null;
+
+    private void Awake()
+    {
+        Transform squareChild = transform.Find("Square");
+        if (squareChild != null)
+        {
+            squareRenderer = squareChild.GetComponent<SpriteRenderer>();
+        }
+
+        slotRenderer = GetComponent<SpriteRenderer>();
+        UpdateSlotColor();
+    }
+
+    private void Update()
+    {
+        if (IsOccupied && squareRenderer.color != filledColor)
+        {
+            squareRenderer.color = filledColor;
+        }
+    }
+
+    public bool CanPlace(TileComponent component)
+    {
+        if (IsOccupied) return false;
+
+        // Uncomment these checks once the specific tile classes are implemented
+        // if (isComputerSlot && !(component is ComputerTile)) return false;
+        // if (isEngineSlot && !(component is EngineTile)) return false;
+        // if (isReactorSlot && !(component is ReactorTile)) return false;
+
+        return true;
+    }
+
+    public void PlaceComponent(TileComponent component)
+    {
+        if (CanPlace(component))
+        {
+            currentComponent = Instantiate(component, transform.position, Quaternion.identity, transform);
+            currentComponent.AssignToSlot(this);
+            UpdateSlotColor();
+
+            // if (isComputerSlot && currentComponent is DamageableTileBase dtComputer)
+            // {
+            //     dtComputer.maxDurability += 10;
+            //     dtComputer.durability += 10;
+            // }
+            // else if (isReactorSlot && currentComponent is ReactorTile rt)
+            // {
+            //     rt.energyGeneration += 2;
+            // }
+        }
+    }
+
+    public void RemoveComponent()
+    {
+        if (currentComponent != null)
+        {
+            Destroy(currentComponent.gameObject);
+            currentComponent = null;
+            UpdateSlotColor();
+        }
+    }
+
+    public void UpdateSlotColor()
+    {
+        if (squareRenderer == null) return;
+
+        if (IsOccupied)
+        {
+            squareRenderer.color = filledColor;
+        }
+        else if (isComputerSlot)
+        {
+            squareRenderer.color = computerColor;
+        }
+        else if (isEngineSlot)
+        {
+            squareRenderer.color = engineColor;
+        }
+        else if (isReactorSlot)
+        {
+            squareRenderer.color = reactorColor;
+        }
+        else
+        {
+            squareRenderer.color = emptyColor;
+        }
+    }
+
+    public void ToggleVisual(bool visible)
+    {
+        if (slotRenderer != null)
+        {
+            slotRenderer.enabled = visible;
+        }
+
+        if (squareRenderer != null)
+        {
+            squareRenderer.enabled = visible;
+        }
+
+        if (currentComponent != null)
+        {
+            currentComponent.ToggleVisual(visible);
+        }
+    }
+}
+
+public class TileVisualMarker : MonoBehaviour
+{
+    private SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void SetVisualsVisible(bool visible)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = visible;
+        }
+    }
+
+    public void ToggleVisuals()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = !spriteRenderer.enabled;
+        }
+    }
+}
