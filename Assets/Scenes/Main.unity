@@ -10982,6 +10982,7 @@ MonoBehaviour:
   availableTiles:
   - {fileID: 2625143353283554468, guid: 3ba1cb08306ea1549884889aa2da752e, type: 3}
   - {fileID: 827767425320826344, guid: e9341b748853ec74b9355712788c7689, type: 3}
+  - {fileID: 1098262481185398998, guid: 53a1f9c519b971649b3fab953c9a54f4, type: 3}
   tilePlacer: {fileID: 1647680187}
   toggleKey: 98
 --- !u!114 &1373427009
@@ -14101,8 +14102,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58b9b56e7c8fc594594c79aa3991f4ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 90
-  rotationSpeed: 110
+  moveSpeed: 5
+  rotationSpeed: 200
   drag: 1
   angularDrag: 1
 --- !u!61 &1846397311

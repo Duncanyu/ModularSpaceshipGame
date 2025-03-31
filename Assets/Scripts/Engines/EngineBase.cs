@@ -9,6 +9,7 @@ public abstract class EngineBase : DamageableTileBase
     public float energyCostPerSecond = 1f;
 
     private bool registered = false;
+    private SpaceshipController controller;
 
     protected virtual void Start()
     {
@@ -17,18 +18,34 @@ public abstract class EngineBase : DamageableTileBase
 
     protected virtual void OnDestroy()
     {
-        if (registered && PlayerController.Instance != null)
+        if (registered && controller != null)
         {
-            PlayerController.Instance.UnregisterEngine(this);
+            controller.UnregisterEngine(this);
         }
     }
 
     public void TryRegisterEngine()
     {
-        if (!registered && PlayerController.Instance != null)
+        if (!registered)
         {
-            PlayerController.Instance.RegisterEngine(this);
-            registered = true;
+            controller = GetComponentInParent<SpaceshipController>();
+            if (controller != null)
+            {
+                controller.RegisterEngine(this);
+                registered = true;
+            }
         }
     }
+
+    public virtual float GetSpeedContribution(float maxSpeed)
+    {
+        return maxSpeed * speedBoostPercent;
+    }
+
+    public virtual float GetTurnContribution(float maxTurnSpeed)
+    {
+        return maxTurnSpeed * turnBoostPercent;
+    }
+
+    public virtual void ApplyThrust() {}
 } 
