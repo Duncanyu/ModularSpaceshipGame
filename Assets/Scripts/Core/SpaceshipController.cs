@@ -16,6 +16,9 @@ public class SpaceshipController : MonoBehaviour
     private float thrustInput;
     private List<EngineBase> engines = new List<EngineBase>();
 
+    private float currentEnergy;
+    public float maxEnergy = 100f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -25,6 +28,7 @@ public class SpaceshipController : MonoBehaviour
 
         baseMoveSpeed = moveSpeed;
         baseRotationSpeed = rotationSpeed;
+        currentEnergy = maxEnergy;
     }
 
     public void RegisterEngine(EngineBase engine)
@@ -43,10 +47,21 @@ public class SpaceshipController : MonoBehaviour
         }
     }
 
+    public bool TryConsumeEnergy(float amount)
+    {
+        if (currentEnergy >= amount)
+        {
+            currentEnergy -= amount;
+            return true;
+        }
+        return false;
+    }
+
     void Update()
     {
         rotationInput = -Input.GetAxis("Horizontal");
         thrustInput = Input.GetAxis("Vertical");
+        //Debug.Log(currentEnergy);
     }
 
     void FixedUpdate()
@@ -56,6 +71,7 @@ public class SpaceshipController : MonoBehaviour
 
         foreach (var engine in engines)
         {
+            engine.ConsumeEnergy(Time.fixedDeltaTime);
             thrustMultiplier += engine.GetSpeedContribution(1f);
             turnMultiplier += engine.GetTurnContribution(1f);
         }

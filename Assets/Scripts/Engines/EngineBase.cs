@@ -10,6 +10,7 @@ public abstract class EngineBase : DamageableTileBase
 
     private bool registered = false;
     private SpaceshipController controller;
+    private bool hasEnergy = true;
 
     protected virtual void Start()
     {
@@ -37,14 +38,22 @@ public abstract class EngineBase : DamageableTileBase
         }
     }
 
-    public virtual float GetSpeedContribution(float maxSpeed)
+    public float GetSpeedContribution(float maxSpeed)
     {
-        return maxSpeed * speedBoostPercent;
+        return hasEnergy ? maxSpeed * speedBoostPercent : 0f;
     }
 
-    public virtual float GetTurnContribution(float maxTurnSpeed)
+    public float GetTurnContribution(float maxTurnSpeed)
     {
-        return maxTurnSpeed * turnBoostPercent;
+        return hasEnergy ? maxTurnSpeed * turnBoostPercent : 0f;
+    }
+
+    public void ConsumeEnergy(float deltaTime)
+    {
+        if (!registered || controller == null) return;
+
+        float energyRequired = energyCostPerSecond * deltaTime;
+        hasEnergy = controller.TryConsumeEnergy(energyRequired);
     }
 
     public virtual void ApplyThrust() {}
