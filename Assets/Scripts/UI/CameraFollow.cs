@@ -97,7 +97,11 @@ public class CameraFollow : MonoBehaviour
 
             float width = localMax.x - localMin.x;
             float height = localMax.y - localMin.y;
-            sizeZoom = Mathf.Max(width, height) * zoomOutSizeFactor;
+            float shipSize = Mathf.Max(width, height);
+            sizeZoom = shipSize * zoomOutSizeFactor;
+
+            float sizeFactorForDistanceZoom = Mathf.Max(1f, shipSize / 10f);
+            distanceZoom *= sizeFactorForDistanceZoom;
         }
 
         float scrollDelta = -Input.mouseScrollDelta.y * scrollZoomSensitivity;

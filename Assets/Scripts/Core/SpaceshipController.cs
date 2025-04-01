@@ -15,7 +15,6 @@ public class SpaceshipController : MonoBehaviour
     private float rotationInput;
     private float thrustInput;
     private List<EngineBase> engines = new List<EngineBase>();
-
     private float currentEnergy;
     public float maxEnergy = 100f;
 
@@ -28,7 +27,7 @@ public class SpaceshipController : MonoBehaviour
 
         baseMoveSpeed = moveSpeed;
         baseRotationSpeed = rotationSpeed;
-        currentEnergy = maxEnergy;
+        currentEnergy = 0f;
     }
 
     public void RegisterEngine(EngineBase engine)
@@ -57,11 +56,26 @@ public class SpaceshipController : MonoBehaviour
         return false;
     }
 
+    public void AddEnergy(float amount)
+    {
+        currentEnergy = Mathf.Min(currentEnergy + amount, maxEnergy);
+    }
+
+    public void AddMaxEnergy(float amount)
+    {
+        maxEnergy += amount;
+    }
+
+    public void RegisterReactor(ReactorBase reactor)
+    {
+        AddMaxEnergy(reactor.maxEnergyContribution);
+    }
+
     void Update()
     {
         rotationInput = -Input.GetAxis("Horizontal");
         thrustInput = Input.GetAxis("Vertical");
-        //Debug.Log(currentEnergy);
+        Debug.Log($"{currentEnergy}/{maxEnergy} E");
     }
 
     void FixedUpdate()
@@ -71,7 +85,6 @@ public class SpaceshipController : MonoBehaviour
 
         foreach (var engine in engines)
         {
-            engine.ConsumeEnergy(Time.fixedDeltaTime);
             thrustMultiplier += engine.GetSpeedContribution(1f);
             turnMultiplier += engine.GetTurnContribution(1f);
         }
@@ -85,4 +98,4 @@ public class SpaceshipController : MonoBehaviour
         Vector2 direction = transform.up * thrustInput;
         rb.AddForce(direction * moveSpeed);
     }
-} 
+}
