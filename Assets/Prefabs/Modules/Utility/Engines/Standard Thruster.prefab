@@ -164,8 +164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bef1193fa717f2c42a8bd82ec02a6786, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durability: 100
-  maxDurability: 100
+  durability: 90
+  maxDurability: 90
   speedBoostPercent: 0.03
   turnBoostPercent: 0.1
   energyCostPerSecond: 2

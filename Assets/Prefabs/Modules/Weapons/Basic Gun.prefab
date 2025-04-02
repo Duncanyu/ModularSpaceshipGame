@@ -63,6 +63,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05187ca92f493b04997b1fb93cd6fc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  durability: 80
+  maxDurability: 80
   weaponName: Basic Gun
   baseDamage: 0
   fireRateRPM: 450
@@ -70,6 +72,7 @@ MonoBehaviour:
   ammoCapacity: 240
   cooldownRate: 4
   isEnergyBased: 0
+  energyCostPerShot: 5
   projectilePrefab: {fileID: 6329105108758936072, guid: 61295562b4194ee4eb12c921ced242f4, type: 3}
   projectileSpeed: 200
   projectileGravity: 0

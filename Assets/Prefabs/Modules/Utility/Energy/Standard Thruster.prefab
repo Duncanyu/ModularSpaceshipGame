@@ -148,10 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8208af00da12a8c4dac0d0ded8ffb0c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durability: 100
-  maxDurability: 100
+  durability: 35
+  maxDurability: 35
   energyGenerationRate: 15
-  maxEnergyContribution: 600
+  maxEnergyContribution: 200
   canExplode: 1
   reactorEffect: {fileID: 0}
   reactorSound: {fileID: 0}

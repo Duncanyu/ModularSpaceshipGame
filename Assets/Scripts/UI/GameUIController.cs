@@ -54,7 +54,7 @@ public class GameUIController : MonoBehaviour
             }
 
             float percent = (max > 0f) ? (current / max) * 100f : 0f;
-            durabilityText.text = $"{Mathf.Round(percent)}%";
+            durabilityText.text = $"{Mathf.Round(percent):F2}%";
         }
     }
 

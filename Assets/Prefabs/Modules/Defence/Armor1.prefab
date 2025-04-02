@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64fd7c867e577d44fa0b55f59ca00b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durability: 100
-  maxDurability: 100
+  durability: 240
+  maxDurability: 240
   regenRate: 0
   regenCooldown: 5
   energyCostPerSecond: 0

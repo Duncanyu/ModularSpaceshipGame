@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class WeaponBase : MonoBehaviour
+public abstract class WeaponBase : DamageableTileBase
 {
     public string weaponName;
     public float baseDamage;
@@ -11,16 +11,19 @@ public abstract class WeaponBase : MonoBehaviour
     public float cooldownRate;
 
     public bool isEnergyBased;
+    public float energyCostPerShot = 5f;
 
     protected int currentAmmo;
     protected float currentHeat;
 
     protected WeaponModifierModule[] modules;
+    protected SpaceshipController controller;
 
     protected virtual void Awake()
     {
         modules = GetComponents<WeaponModifierModule>();
         currentAmmo = ammoCapacity;
+        controller = GetComponentInParent<SpaceshipController>();
     }
 
     protected virtual void Update()
@@ -32,6 +35,11 @@ public abstract class WeaponBase : MonoBehaviour
     {
         if (CanFire())
         {
+            if (isEnergyBased && controller != null)
+            {
+                if (!controller.TryConsumeEnergy(energyCostPerShot)) return;
+            }
+
             float finalDamage = CalculateDamage();
             Shoot(finalDamage);
             ApplyHeat();
@@ -43,7 +51,7 @@ public abstract class WeaponBase : MonoBehaviour
 
     protected bool CanFire()
     {
-        return isEnergyBased ? true : currentAmmo > 0;
+        return isEnergyBased || currentAmmo > 0;
     }
 
     protected float CalculateDamage()
