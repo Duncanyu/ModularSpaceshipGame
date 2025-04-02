@@ -49,15 +49,10 @@ public class TileSlot : MonoBehaviour
             return isEngineSlot;
         }
 
-        // if (component is ComputerTile)
-        // {
-        //     return isComputerSlot;
-        // }
-
-        // if (component is ReactorTile)
-        // {
-        //     return isReactorSlot || (!isComputerSlot && !isEngineSlot);
-        // }
+        if (component is ReactorTile)
+        {
+            return !isComputerSlot && !isEngineSlot;
+        }
 
         if (!isComputerSlot && !isEngineSlot && !isReactorSlot)
         {

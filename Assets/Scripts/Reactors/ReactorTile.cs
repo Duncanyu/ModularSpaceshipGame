@@ -11,9 +11,7 @@ public class ReactorTile : TileComponent
         if (reactor == null)
         {
             Debug.LogWarning("[ReactorTile] No ReactorBase found on tile.");
-            return;
         }
-        reactor.TryRegisterReactor();
     }
 
     private void Update()

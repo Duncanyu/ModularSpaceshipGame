@@ -16,32 +16,47 @@ public class ReactorBase : DamageableTileBase
         if (controller != null)
         {
             Debug.Log("[ReactorBase] Registering reactor. Adding max energy: " + maxEnergyContribution);
-            controller.AddMaxEnergy(maxEnergyContribution);
+            //controller.AddMaxEnergy(maxEnergyContribution);
         }
         else
         {
-            Debug.LogWarning("[ReactorBase] Controller not found in parent hierarchy.");
+            //Debug.LogWarning("[ReactorBase] Controller not found in parent hierarchy.");
         }
 
         assignedSlot = GetComponentInParent<TileSlot>();
         if (assignedSlot != null && assignedSlot.isReactorSlot)
         {
             energyGenerationRate *= 1.5f;
-            Debug.Log("[ReactorBase] Boosted generation rate on reactor slot. New rate: " + energyGenerationRate);
+            //Debug.Log("[ReactorBase] Boosted generation rate on reactor slot. New rate: " + energyGenerationRate);
+        }
+    }
+
+    private void EnsureController()
+    {
+        if (controller == null)
+        {
+            controller = GetComponentInParent<SpaceshipController>();
+            if (controller != null)
+            {
+                // Debug.Log("[ReactorBase] Controller found late. Adding max energy: " + maxEnergyContribution);
+                controller.AddMaxEnergy(maxEnergyContribution);
+            }
         }
     }
 
     protected void Update()
     {
+        EnsureController();
+
         if (controller != null)
         {
             float amount = energyGenerationRate * Time.deltaTime;
-            Debug.Log("[ReactorBase] Adding energy: " + amount);
+            // Debug.Log("[ReactorBase] Adding energy: " + amount);
             controller.AddEnergy(amount);
         }
         else
         {
-            Debug.LogWarning("[ReactorBase] Controller is null during Update.");
+            // Debug.LogWarning("[ReactorBase] Controller is null during Update.");
         }
     }
 

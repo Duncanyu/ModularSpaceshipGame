@@ -168,6 +168,6 @@ MonoBehaviour:
   maxDurability: 100
   speedBoostPercent: 0.03
   turnBoostPercent: 0.1
-  energyCostPerSecond: 0.6
+  energyCostPerSecond: 2
   thrustEffect: {fileID: 0}
   thrustSound: {fileID: 0}

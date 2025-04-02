@@ -150,8 +150,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   durability: 100
   maxDurability: 100
-  energyGenerationRate: 150
-  maxEnergyContribution: 400
+  energyGenerationRate: 15
+  maxEnergyContribution: 600
   canExplode: 1
   reactorEffect: {fileID: 0}
   reactorSound: {fileID: 0}

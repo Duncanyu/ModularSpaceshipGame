@@ -12,11 +12,15 @@ public class TilePlacer : MonoBehaviour
     public KeyCode clearKey = KeyCode.C;
 
     private TileComponent previewTile;
+    private TileComponent mirrorPreviewTile;
     private float currentAngle = 0f;
     private bool tileVisualsVisible = true;
     private bool mirrorMode = false;
     private float lastClearPressTime = -1f;
     private float clearConfirmDelay = 0.4f;
+    private bool isDragging = false;
+
+    private TileSlot lastHoveredSlot;
 
     public GameObject mirrorIndicator;
 
@@ -36,23 +40,25 @@ public class TilePlacer : MonoBehaviour
             bool isActive = buildUI.activeSelf;
             buildUI.SetActive(!isActive);
             SetTileToPlace(null);
+            ResetSlotVisual(lastHoveredSlot);
             return;
         }
 
         if (Input.GetKeyDown(toggleVisualKey))
         {
-            Debug.Log("Toggling Visuals");
             tileVisualsVisible = !tileVisualsVisible;
             ToggleAllTileVisuals(tileVisualsVisible);
         }
 
-        if (!buildUI.activeSelf) return;
-
+        if (!buildUI.activeSelf)
+        {
+            ResetSlotVisual(lastHoveredSlot);
+            return;
+        }
 
         if (Input.GetKeyDown(mirrorKey))
         {
             mirrorMode = !mirrorMode;
-            Debug.Log("Mirror mode toggled: " + mirrorMode);
             if (mirrorIndicator != null)
                 mirrorIndicator.SetActive(mirrorMode);
         }
@@ -61,28 +67,22 @@ public class TilePlacer : MonoBehaviour
         {
             if (Time.time - lastClearPressTime <= clearConfirmDelay)
             {
-                Debug.Log("Clearing all tiles");
                 foreach (Transform child in gridManager.transform)
                 {
                     TileSlot slot = child.GetComponent<TileSlot>();
-                    if (slot != null)
-                    {
-                        slot.RemoveComponent();
-                    }
+                    if (slot != null) slot.RemoveComponent();
                 }
                 lastClearPressTime = -1f;
             }
             else
             {
-                Debug.Log("Press again quickly to confirm clear");
                 lastClearPressTime = Time.time;
             }
         }
 
         if (tilePrefab == null) return;
 
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
 
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -93,39 +93,80 @@ public class TilePlacer : MonoBehaviour
         Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         TileSlot targetSlot = FindClosestSlot(mouseWorldPos);
 
+        if (lastHoveredSlot != null && lastHoveredSlot != targetSlot)
+        {
+            ResetSlotVisual(lastHoveredSlot);
+        }
+
         if (targetSlot != null)
         {
+            lastHoveredSlot = targetSlot;
+
+            if (!targetSlot.IsOccupied && targetSlot.CanPlace(tilePrefab))
+            {
+                HighlightSlot(targetSlot, Color.green);
+            }
+            else
+            {
+                HighlightSlot(targetSlot, Color.red);
+            }
+
             if (previewTile == null)
             {
                 previewTile = Instantiate(tilePrefab);
                 previewTile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
             }
-
             previewTile.transform.position = targetSlot.transform.position;
             previewTile.transform.rotation = Quaternion.Euler(0, 0, currentAngle + targetSlot.transform.eulerAngles.z);
+
+            if (mirrorMode)
+            {
+                TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
+                if (mirrorSlot != null)
+                {
+                    if (mirrorPreviewTile == null)
+                    {
+                        mirrorPreviewTile = Instantiate(tilePrefab);
+                        mirrorPreviewTile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+                    }
+                    mirrorPreviewTile.transform.position = mirrorSlot.transform.position;
+                    mirrorPreviewTile.transform.rotation = Quaternion.Euler(0, 0, currentAngle + mirrorSlot.transform.eulerAngles.z);
+                }
+            }
 
             if (Input.GetMouseButtonDown(1))
             {
                 if (targetSlot.IsOccupied)
                 {
-                    targetSlot.RemoveComponent();
+                    TileComponent existing = targetSlot.currentComponent;
+                    SetTileToPlace(existing);
+                }
+            }
 
-                    if (mirrorMode)
-                    {
-                        TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
-                        if (mirrorSlot != null && mirrorSlot.IsOccupied)
-                        {
-                            mirrorSlot.RemoveComponent();
-                        }
-                    }
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0) && targetSlot.IsOccupied)
+            {
+                targetSlot.RemoveComponent();
+                if (mirrorMode)
+                {
+                    TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
+                    if (mirrorSlot != null && mirrorSlot.IsOccupied)
+                        mirrorSlot.RemoveComponent();
                 }
             }
             else if (Input.GetMouseButtonDown(0))
             {
+                isDragging = true;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                isDragging = false;
+            }
+
+            if (isDragging)
+            {
                 if (!targetSlot.IsOccupied && targetSlot.CanPlace(tilePrefab))
                 {
                     PlaceTile(targetSlot);
-
                     if (mirrorMode)
                     {
                         TileSlot mirrorSlot = FindMirrorSlot(targetSlot);
@@ -205,6 +246,27 @@ public class TilePlacer : MonoBehaviour
         }
     }
 
+    void HighlightSlot(TileSlot slot, Color color)
+    {
+        SpriteRenderer renderer = slot.GetComponentInChildren<SpriteRenderer>();
+        if (renderer != null)
+        {
+            renderer.color = color;
+        }
+    }
+
+    void ResetSlotVisual(TileSlot slot)
+    {
+        if (slot != null)
+            slot.UpdateSlotColor();
+
+        if (mirrorPreviewTile != null)
+        {
+            Destroy(mirrorPreviewTile.gameObject);
+            mirrorPreviewTile = null;
+        }
+    }
+
     public void SetTileToPlace(TileComponent newTile)
     {
         tilePrefab = newTile;
@@ -212,7 +274,12 @@ public class TilePlacer : MonoBehaviour
         {
             Destroy(previewTile.gameObject);
         }
+        if (mirrorPreviewTile != null)
+        {
+            Destroy(mirrorPreviewTile.gameObject);
+        }
         previewTile = null;
+        mirrorPreviewTile = null;
         currentAngle = 0f;
     }
 }

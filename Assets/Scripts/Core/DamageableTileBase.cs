@@ -16,6 +16,16 @@ public abstract class DamageableTileBase : MonoBehaviour
         }
     }
 
+    public float GetCurrentHealth()
+    {
+        return durability;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxDurability;
+    }
+
     protected virtual void OnDestroyed()
     {
         Destroy(gameObject);
