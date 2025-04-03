@@ -8,10 +8,14 @@ public abstract class TileComponent : MonoBehaviour
     public Sprite uiIcon;
     protected TileSlot parentSlot;
 
-    public void AssignToSlot(TileSlot slot)
+    public TileSlot AssignedSlot => parentSlot;
+
+    public virtual void AssignToSlot(TileSlot slot)
     {
         parentSlot = slot;
         transform.position = slot.transform.position;
+        transform.rotation = slot.transform.rotation;
+        transform.SetParent(slot.transform);
     }
 
     public void ToggleVisual(bool visible)

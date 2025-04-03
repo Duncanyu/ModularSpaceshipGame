@@ -21,11 +21,15 @@ public abstract class WeaponBase : DamageableTileBase
 
     protected WeaponModifierModule[] modules;
     protected SpaceshipController controller;
+    protected TileSlot weaponSlot;
 
     protected float projectileLifetimeMultiplier = 1f;
     protected float projectileSpeedMultiplier = 1f;
     protected float weaponSpread = 0f;
     protected float heatMultiplier = 1f;
+
+    private float scanTimer = 0f;
+    private float scanInterval = 10f;
 
     protected virtual void Awake()
     {
@@ -36,12 +40,32 @@ public abstract class WeaponBase : DamageableTileBase
     protected virtual void Start()
     {
         controller = GetComponentInParent<SpaceshipController>();
+
+        TileComponent tileComponent = GetComponent<TileComponent>();
+        if (tileComponent != null)
+        {
+            weaponSlot = tileComponent.AssignedSlot;
+        }
+
         ScanForModules();
     }
 
     protected virtual void Update()
     {
         CoolDownWeapon();
+
+        scanTimer += Time.deltaTime;
+        if (scanTimer >= scanInterval)
+        {
+            scanTimer = 0f;
+            ScanForModules();
+        }
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Debug.Log("[WeaponBase] Manual module rescan triggered by key press.");
+            ScanForModules();
+        }
     }
 
     public void Fire()
@@ -108,9 +132,46 @@ public abstract class WeaponBase : DamageableTileBase
     protected void ScanForModules()
     {
         WeaponModuleBase[] nearbyModules = GetComponentsInChildren<WeaponModuleBase>();
+        Debug.Log($"[WeaponBase] Scanning for modules... found {nearbyModules.Length}");
         foreach (var module in nearbyModules)
         {
+            Debug.Log($"[WeaponBase] Applying module (child): {module.name}");
             module.ApplyModuleEffect();
+        }
+
+        if (weaponSlot == null)
+        {
+            Debug.LogWarning("[WeaponBase] No TileSlot assigned to weapon. Cannot scan adjacent modules.");
+            return;
+        }
+
+        HullGridManager gridManager = FindObjectOfType<HullGridManager>();
+        if (gridManager == null)
+        {
+            Debug.LogWarning("[WeaponBase] No HullGridManager found.");
+            return;
+        }
+
+        Vector2Int[] directions = new Vector2Int[]
+        {
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right
+        };
+
+        foreach (var dir in directions)
+        {
+            TileSlot neighbor = gridManager.GetSlotAt(weaponSlot.gridPosition + dir);
+            if (neighbor != null && neighbor.currentComponent != null)
+            {
+                WeaponModuleBase mod = neighbor.currentComponent.GetComponent<WeaponModuleBase>();
+                if (mod != null)
+                {
+                    Debug.Log($"[WeaponBase] Applying module (adjacent): {mod.name}");
+                    mod.ApplyModuleEffect();
+                }
+            }
         }
     }
 
@@ -119,40 +180,49 @@ public abstract class WeaponBase : DamageableTileBase
     public virtual void ModifyAccuracy(float amount)
     {
         weaponSpread = Mathf.Max(weaponSpread - amount, 0f);
+        Debug.Log($"[WeaponBase] Accuracy modified. New spread: {weaponSpread}");
     }
 
     public virtual void ModifyFireRate(float multiplier)
     {
+        Debug.Log($"[WeaponBase] Modifying fire rate. Old: {fireRateRPM}, Multiplier: {multiplier}");
         fireRateRPM *= multiplier;
+        Debug.Log($"[WeaponBase] New fire rate: {fireRateRPM}");
     }
 
     public virtual void ModifyProjectileSpeed(float multiplier)
     {
         projectileSpeedMultiplier *= multiplier;
+        Debug.Log($"[WeaponBase] Projectile speed multiplier set to: {projectileSpeedMultiplier}");
     }
 
     public virtual void ModifyLifetime(float multiplier)
     {
         projectileLifetimeMultiplier *= multiplier;
+        Debug.Log($"[WeaponBase] Projectile lifetime multiplier set to: {projectileLifetimeMultiplier}");
     }
 
     public virtual void ModifyHeatMultiplier(float multiplier)
     {
         heatMultiplier *= multiplier;
+        Debug.Log($"[WeaponBase] Heat multiplier set to: {heatMultiplier}");
     }
 
     public virtual void ModifyHeatFlat(float amount)
     {
         heatPerShot += amount;
+        Debug.Log($"[WeaponBase] Heat per shot now: {heatPerShot}");
     }
 
     public virtual void ModifyEnergyCostPerSecond(float amount)
     {
         energyCostPerSecond += amount;
+        Debug.Log($"[WeaponBase] Energy cost per second now: {energyCostPerSecond}");
     }
 
     public virtual void ModifyEnergyCostPerShot(float amount)
     {
         energyCostPerShot += amount;
+        Debug.Log($"[WeaponBase] Energy cost per shot now: {energyCostPerShot}");
     }
 } 
