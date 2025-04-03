@@ -15,6 +15,7 @@ public class SpaceshipController : MonoBehaviour
     private float rotationInput;
     private float thrustInput;
     private List<EngineBase> engines = new List<EngineBase>();
+    private List<WeaponBase> weapons = new List<WeaponBase>();
     private float currentEnergy;
     public float maxEnergy = 100f;
 
@@ -41,6 +42,14 @@ public class SpaceshipController : MonoBehaviour
         if (!engines.Contains(engine))
         {
             engines.Add(engine);
+        }
+    }
+
+    public void RegisterWeapon(WeaponBase weapon)
+    {
+        if (!weapons.Contains(weapon))
+        {
+            weapons.Add(weapon);
         }
     }
 
@@ -106,6 +115,11 @@ public class SpaceshipController : MonoBehaviour
             turnMultiplier += engine.GetTurnContribution(1f);
         }
 
+        foreach (var weapon in weapons)
+        {
+            weapon.DrainPassiveEnergy(Time.fixedDeltaTime);
+        }
+
         moveSpeed = Mathf.Min(baseMoveSpeed * thrustMultiplier, baseMoveSpeed);
         rotationSpeed = Mathf.Min(baseRotationSpeed * turnMultiplier, baseRotationSpeed);
 
@@ -115,4 +129,4 @@ public class SpaceshipController : MonoBehaviour
         Vector2 direction = transform.up * thrustInput;
         rb.AddForce(direction * moveSpeed);
     }
-}
+} 

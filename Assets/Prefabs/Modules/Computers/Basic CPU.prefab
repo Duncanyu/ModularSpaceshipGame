@@ -153,7 +153,7 @@ MonoBehaviour:
   autoAimEnabled: 0
   autoAimRange: 8
   targetUpdateRate: 0.5
-  energyCostPerSecond: 10
+  energyCostPerSecond: 70
   bootupEffect: {fileID: 0}
   humSound: {fileID: 0}
 --- !u!114 &4316680038247533012

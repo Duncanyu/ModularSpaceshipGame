@@ -4,18 +4,25 @@ public class WeaponTile : TileComponent
 {
     private WeaponBase weapon;
 
+    private void Start()
+    {
+        TryRegisterWeapon();
+    }
+
     public void TryRegisterWeapon()
     {
         weapon = GetComponent<WeaponBase>();
-        //Debug.Log($"[WeaponTile] Found weapon: {weapon}");
 
         WeaponController controller = GetComponentInParent<WeaponController>();
-        //Debug.Log($"[WeaponTile] Found controller: {controller}");
-
         if (controller != null && weapon != null)
         {
             controller.RegisterWeapon(weapon);
-            //Debug.Log("[WeaponTile] Registered weapon with controller.");
+        }
+
+        SpaceshipController ship = GetComponentInParent<SpaceshipController>();
+        if (ship != null && weapon != null)
+        {
+            ship.RegisterWeapon(weapon);
         }
 
         if (weapon != null)

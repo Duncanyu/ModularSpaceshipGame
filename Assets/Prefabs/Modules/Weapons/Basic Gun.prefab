@@ -73,6 +73,8 @@ MonoBehaviour:
   cooldownRate: 4
   isEnergyBased: 0
   energyCostPerShot: 5
+  energyCostPerSecond: 20
+  resourceCostPerSecond: 0
   projectilePrefab: {fileID: 6329105108758936072, guid: 61295562b4194ee4eb12c921ced242f4, type: 3}
   projectileSpeed: 200
   projectileGravity: 0

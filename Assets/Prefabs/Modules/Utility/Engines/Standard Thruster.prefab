@@ -166,8 +166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   durability: 90
   maxDurability: 90
-  speedBoostPercent: 0.03
-  turnBoostPercent: 0.1
-  energyCostPerSecond: 2
+  speedBoostPercent: 0.02
+  turnBoostPercent: 0.06
+  energyCostPerSecond: 3
   thrustEffect: {fileID: 0}
   thrustSound: {fileID: 0}

@@ -10,6 +10,7 @@ public class ComputerBase : DamageableTileBase
 
     protected SpaceshipController controller;
     protected float lastUpdateTime = 0f;
+    private bool hasPower = true;
 
     protected virtual void Start()
     {
@@ -21,10 +22,8 @@ public class ComputerBase : DamageableTileBase
         if (!autoAimEnabled || controller == null) return;
 
         float energyRequired = energyCostPerSecond * Time.deltaTime;
-        if (!controller.TryConsumeEnergy(energyRequired))
-        {
-            return;
-        }
+        hasPower = controller.TryConsumeEnergy(energyRequired);
+        if (!hasPower) return;
 
         if (Time.time - lastUpdateTime > targetUpdateRate)
         {
