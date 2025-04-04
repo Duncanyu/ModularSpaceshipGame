@@ -18,11 +18,19 @@ public class BarrelModule : WeaponModuleBase
     public float railgunFireRateMultiplier = 1.0f;
     public float railgunLifetimeMultiplier = 1.0f;
 
-    private bool applied = false;
-
     public override void ApplyModuleEffect()
     {
-        if (parentWeapon == null || applied) return;
+        if (parentWeapon == null)
+        {
+            parentWeapon = GetComponentInParent<WeaponBase>();
+            if (parentWeapon == null)
+            {
+                Debug.LogWarning($"[BarrelModule] Could not find WeaponBase in parent of {name}");
+                return;
+            }
+        }
+
+        Debug.Log($"[BarrelModule] parentWeapon is set on {gameObject.name}");
 
         switch (parentWeapon.weaponName.ToLower())
         {
@@ -41,6 +49,7 @@ public class BarrelModule : WeaponModuleBase
                 break;
 
             default:
+                Debug.Log("[BarrelModule] Default path used for standard weapon");
                 parentWeapon.ModifyLifetime(lifetimeMultiplier);
                 parentWeapon.ModifyAccuracy(accuracyBonus);
                 parentWeapon.ModifyFireRate(fireRateMultiplier);
@@ -49,12 +58,11 @@ public class BarrelModule : WeaponModuleBase
                 break;
         }
 
-        Debug.Log("[BarrelModule] Applied modifiers to " + parentWeapon.weaponName);
-        applied = true;
+        Debug.Log($"[BarrelModule] Applied modifiers to {parentWeapon.weaponName}");
     }
 
     public override void RemoveModuleEffect()
     {
         // Implement later it gets fucking hard
     }
-} 
+}

@@ -28,7 +28,11 @@ public abstract class WeaponModuleBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        // Deliberately left empty to prevent premature null assignment
+    }
+
+    public void SetWeapon(WeaponBase weapon)
+    {
+        parentWeapon = weapon;
     }
 
     public virtual void ApplyModuleEffect()

@@ -13,7 +13,7 @@ public abstract class WeaponBase : DamageableTileBase
     public bool isEnergyBased;
     public float energyCostPerShot = 5f;
     public float energyCostPerSecond = 1f;
-    public float resourceCostPerSecond = 0f; // Placeholder for future use
+    public float resourceCostPerSecond = 0f;
 
     protected int currentAmmo;
     protected float currentHeat;
@@ -28,6 +28,11 @@ public abstract class WeaponBase : DamageableTileBase
     protected float weaponSpread = 0f;
     protected float heatMultiplier = 1f;
 
+    private float baseFireRateRPM;
+    private float baseHeatPerShot;
+    private float baseEnergyCostPerShot;
+    private float baseEnergyCostPerSecond;
+
     private float scanTimer = 0f;
     private float scanInterval = 1f;
 
@@ -35,6 +40,11 @@ public abstract class WeaponBase : DamageableTileBase
     {
         modules = GetComponents<WeaponModifierModule>();
         currentAmmo = ammoCapacity;
+
+        baseFireRateRPM = fireRateRPM;
+        baseHeatPerShot = heatPerShot;
+        baseEnergyCostPerShot = energyCostPerShot;
+        baseEnergyCostPerSecond = energyCostPerSecond;
     }
 
     protected virtual void Start()
@@ -131,6 +141,12 @@ public abstract class WeaponBase : DamageableTileBase
 
     public void ScanForModules()
     {
+        // Reset modifiable values to base first
+        fireRateRPM = baseFireRateRPM;
+        heatPerShot = baseHeatPerShot;
+        energyCostPerShot = baseEnergyCostPerShot;
+        energyCostPerSecond = baseEnergyCostPerSecond;
+
         WeaponModuleBase[] nearbyModules = GetComponentsInChildren<WeaponModuleBase>();
         Debug.Log($"[WeaponBase] Scanning for modules... found {nearbyModules.Length}");
         foreach (var module in nearbyModules)
