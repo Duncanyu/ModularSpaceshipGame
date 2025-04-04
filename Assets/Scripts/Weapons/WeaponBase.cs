@@ -13,7 +13,7 @@ public abstract class WeaponBase : DamageableTileBase
     public bool isEnergyBased;
     public float energyCostPerShot = 5f;
     public float energyCostPerSecond = 1f;
-    public float resourceCostPerSecond = 0f;
+    public float resourceCostPerSecond = 0f; // Placeholder for future use
 
     protected int currentAmmo;
     protected float currentHeat;
@@ -29,7 +29,7 @@ public abstract class WeaponBase : DamageableTileBase
     protected float heatMultiplier = 1f;
 
     private float scanTimer = 0f;
-    private float scanInterval = 10f;
+    private float scanInterval = 1f;
 
     protected virtual void Awake()
     {
@@ -129,7 +129,7 @@ public abstract class WeaponBase : DamageableTileBase
         currentHeat = Mathf.Max(currentHeat - cooldownRate * Time.deltaTime, 0);
     }
 
-    protected void ScanForModules()
+    public void ScanForModules()
     {
         WeaponModuleBase[] nearbyModules = GetComponentsInChildren<WeaponModuleBase>();
         Debug.Log($"[WeaponBase] Scanning for modules... found {nearbyModules.Length}");

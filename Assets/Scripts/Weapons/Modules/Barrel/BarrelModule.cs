@@ -55,6 +55,6 @@ public class BarrelModule : WeaponModuleBase
 
     public override void RemoveModuleEffect()
     {
-        // implement later it gets fucking hard
+        // Implement later it gets fucking hard
     }
 } 

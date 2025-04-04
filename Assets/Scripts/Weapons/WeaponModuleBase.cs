@@ -28,13 +28,21 @@ public abstract class WeaponModuleBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        parentWeapon = GetComponentInParent<WeaponBase>();
+        // Deliberately left empty to prevent premature null assignment
+    }
+
+    public virtual void ApplyModuleEffect()
+    {
         if (parentWeapon == null)
         {
-            //Debug.LogWarning($"[WeaponModule] No parent WeaponBase found on {name}.");
+            parentWeapon = GetComponentInParent<WeaponBase>();
+            if (parentWeapon == null)
+            {
+                Debug.LogWarning($"[WeaponModuleBase] No WeaponBase found on {name}, cannot apply effect.");
+                return;
+            }
         }
     }
 
-    public virtual void ApplyModuleEffect() {}
     public virtual void RemoveModuleEffect() {}
 } 

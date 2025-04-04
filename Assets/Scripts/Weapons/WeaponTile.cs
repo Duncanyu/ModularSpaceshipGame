@@ -28,6 +28,19 @@ public class WeaponTile : TileComponent
         if (weapon != null)
         {
             weapon.transform.rotation = transform.rotation;
+
+            TileComponent tileComponent = GetComponent<TileComponent>();
+            if (tileComponent != null && tileComponent.AssignedSlot != null)
+            {
+                var field = typeof(WeaponBase).GetField("weaponSlot", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(weapon, tileComponent.AssignedSlot);
+                    Debug.Log("[WeaponTile] Assigned TileSlot to WeaponBase manually.");
+                }
+            }
+
+            weapon.ScanForModules();
         }
     }
 }

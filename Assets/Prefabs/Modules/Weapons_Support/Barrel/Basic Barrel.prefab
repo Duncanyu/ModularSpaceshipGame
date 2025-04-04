@@ -149,9 +149,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moduleType: 0
-  lifetimeMultiplier: 2
+  lifetimeMultiplier: 1
   accuracyBonus: 0
-  fireRateMultiplier: 2
+  fireRateMultiplier: 100
   projectileSpeedMultiplier: 0.1
   heatBonus: 0
   laserHeatMultiplier: 1
