@@ -39,12 +39,8 @@ public abstract class WeaponModuleBase : MonoBehaviour
     {
         if (parentWeapon == null)
         {
-            parentWeapon = GetComponentInParent<WeaponBase>();
-            if (parentWeapon == null)
-            {
-                Debug.LogWarning($"[WeaponModuleBase] No WeaponBase found on {name}, cannot apply effect.");
-                return;
-            }
+            Debug.LogWarning($"[WeaponModuleBase] No parentWeapon set for {name}, cannot apply effect.");
+            return;
         }
     }
 

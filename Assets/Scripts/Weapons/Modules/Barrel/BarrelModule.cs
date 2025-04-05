@@ -5,8 +5,8 @@ public class BarrelModule : WeaponModuleBase
     [Header("Barrel Effects")]
     public float lifetimeMultiplier = 1.0f;
     public float accuracyBonus = 0.0f;
-    public float fireRateMultiplier = 1.0f; // Multiplies fire rate (1.2 = slower)
-    public float projectileSpeedMultiplier = 1.0f; // Slows projectile (0.8 = slower)
+    public float fireRateMultiplier = 1.0f;
+    public float projectileSpeedMultiplier = 1.0f;
     public float heatBonus = 0.0f;
 
     public float laserHeatMultiplier = 1.0f;
@@ -22,15 +22,11 @@ public class BarrelModule : WeaponModuleBase
     {
         if (parentWeapon == null)
         {
-            parentWeapon = GetComponentInParent<WeaponBase>();
-            if (parentWeapon == null)
-            {
-                Debug.LogWarning($"[BarrelModule] Could not find WeaponBase in parent of {name}");
-                return;
-            }
+            Debug.LogWarning($"[BarrelModule] parentWeapon is null on {gameObject.name}, skipping effect.");
+            return;
         }
 
-        Debug.Log($"[BarrelModule] parentWeapon is set on {gameObject.name}");
+        Debug.Log($"[BarrelModule] Applying to: {parentWeapon.weaponName}");
 
         switch (parentWeapon.weaponName.ToLower())
         {
@@ -49,7 +45,7 @@ public class BarrelModule : WeaponModuleBase
                 break;
 
             default:
-                Debug.Log("[BarrelModule] Default path used for standard weapon");
+                Debug.Log("[BarrelModule] Applying default projectile weapon effects");
                 parentWeapon.ModifyLifetime(lifetimeMultiplier);
                 parentWeapon.ModifyAccuracy(accuracyBonus);
                 parentWeapon.ModifyFireRate(fireRateMultiplier);
@@ -58,7 +54,7 @@ public class BarrelModule : WeaponModuleBase
                 break;
         }
 
-        Debug.Log($"[BarrelModule] Applied modifiers to {parentWeapon.weaponName}");
+        Debug.Log($"[BarrelModule] Modifiers successfully applied to {parentWeapon.weaponName}");
     }
 
     public override void RemoveModuleEffect()
