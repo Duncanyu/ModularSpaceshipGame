@@ -6,6 +6,16 @@ public class WeaponTile : TileComponent
 
     private void Start()
     {
+        if (AssignedSlot == null)
+        {
+            TileSlot foundSlot = GetComponentInParent<TileSlot>();
+            if (foundSlot != null)
+            {
+                AssignToSlot(foundSlot);
+                Debug.Log("[WeaponTile] Slot was missing. Assigned manually.");
+            }
+        }
+
         TryRegisterWeapon();
     }
 
@@ -32,15 +42,10 @@ public class WeaponTile : TileComponent
             TileComponent tileComponent = GetComponent<TileComponent>();
             if (tileComponent != null && tileComponent.AssignedSlot != null)
             {
-                var field = typeof(WeaponBase).GetField("weaponSlot", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (field != null)
-                {
-                    field.SetValue(weapon, tileComponent.AssignedSlot);
-                    Debug.Log("[WeaponTile] Assigned TileSlot to WeaponBase manually.");
-                }
+                weapon.AssignSlot(tileComponent.AssignedSlot);
+                Debug.Log("[WeaponTile] Assigned slot to WeaponBase using AssignSlot().");
+                weapon.ScanForModules();
             }
-
-            weapon.ScanForModules();
         }
     }
-}
+} 

@@ -13,7 +13,7 @@ public abstract class WeaponBase : DamageableTileBase
     public bool isEnergyBased;
     public float energyCostPerShot = 5f;
     public float energyCostPerSecond = 1f;
-    public float resourceCostPerSecond = 0f;
+    public float resourceCostPerSecond = 0f; // Placeholder for future use
 
     protected int currentAmmo;
     protected float currentHeat;
@@ -28,11 +28,6 @@ public abstract class WeaponBase : DamageableTileBase
     protected float weaponSpread = 0f;
     protected float heatMultiplier = 1f;
 
-    private float baseFireRateRPM;
-    private float baseHeatPerShot;
-    private float baseEnergyCostPerShot;
-    private float baseEnergyCostPerSecond;
-
     private float scanTimer = 0f;
     private float scanInterval = 1f;
 
@@ -40,11 +35,6 @@ public abstract class WeaponBase : DamageableTileBase
     {
         modules = GetComponents<WeaponModifierModule>();
         currentAmmo = ammoCapacity;
-
-        baseFireRateRPM = fireRateRPM;
-        baseHeatPerShot = heatPerShot;
-        baseEnergyCostPerShot = energyCostPerShot;
-        baseEnergyCostPerSecond = energyCostPerSecond;
     }
 
     protected virtual void Start()
@@ -76,6 +66,11 @@ public abstract class WeaponBase : DamageableTileBase
             Debug.Log("[WeaponBase] Manual module rescan triggered by key press.");
             ScanForModules();
         }
+    }
+
+    public void AssignSlot(TileSlot slot)
+    {
+        weaponSlot = slot;
     }
 
     public void Fire()
@@ -141,16 +136,11 @@ public abstract class WeaponBase : DamageableTileBase
 
     public void ScanForModules()
     {
-        // Reset modifiable values to base first
-        fireRateRPM = baseFireRateRPM;
-        heatPerShot = baseHeatPerShot;
-        energyCostPerShot = baseEnergyCostPerShot;
-        energyCostPerSecond = baseEnergyCostPerSecond;
-
         WeaponModuleBase[] nearbyModules = GetComponentsInChildren<WeaponModuleBase>();
         Debug.Log($"[WeaponBase] Scanning for modules... found {nearbyModules.Length}");
         foreach (var module in nearbyModules)
         {
+            module.SetWeapon(this);
             Debug.Log($"[WeaponBase] Applying module (child): {module.name}");
             module.ApplyModuleEffect();
         }
@@ -184,6 +174,7 @@ public abstract class WeaponBase : DamageableTileBase
                 WeaponModuleBase mod = neighbor.currentComponent.GetComponent<WeaponModuleBase>();
                 if (mod != null)
                 {
+                    mod.SetWeapon(this);
                     Debug.Log($"[WeaponBase] Applying module (adjacent): {mod.name}");
                     mod.ApplyModuleEffect();
                 }
