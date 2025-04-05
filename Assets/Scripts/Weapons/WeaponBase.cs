@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public abstract class WeaponBase : DamageableTileBase
 {
@@ -13,7 +14,7 @@ public abstract class WeaponBase : DamageableTileBase
     public bool isEnergyBased;
     public float energyCostPerShot = 5f;
     public float energyCostPerSecond = 1f;
-    public float resourceCostPerSecond = 0f; // Placeholder for future use
+    public float resourceCostPerSecond = 0f;
 
     protected int currentAmmo;
     protected float currentHeat;
@@ -28,6 +29,11 @@ public abstract class WeaponBase : DamageableTileBase
     protected float weaponSpread = 0f;
     protected float heatMultiplier = 1f;
 
+    private float baseFireRateRPM;
+    private float baseHeatPerShot;
+    private float baseEnergyCostPerShot;
+    private float baseEnergyCostPerSecond;
+
     private float scanTimer = 0f;
     private float scanInterval = 1f;
 
@@ -35,6 +41,11 @@ public abstract class WeaponBase : DamageableTileBase
     {
         modules = GetComponents<WeaponModifierModule>();
         currentAmmo = ammoCapacity;
+
+        baseFireRateRPM = fireRateRPM;
+        baseHeatPerShot = heatPerShot;
+        baseEnergyCostPerShot = energyCostPerShot;
+        baseEnergyCostPerSecond = energyCostPerSecond;
     }
 
     protected virtual void Start()
@@ -66,11 +77,6 @@ public abstract class WeaponBase : DamageableTileBase
             Debug.Log("[WeaponBase] Manual module rescan triggered by key press.");
             ScanForModules();
         }
-    }
-
-    public void AssignSlot(TileSlot slot)
-    {
-        weaponSlot = slot;
     }
 
     public void Fire()
@@ -134,14 +140,27 @@ public abstract class WeaponBase : DamageableTileBase
         currentHeat = Mathf.Max(currentHeat - cooldownRate * Time.deltaTime, 0);
     }
 
+    public void AssignSlot(TileSlot slot)
+    {
+        weaponSlot = slot;
+    }
+
     public void ScanForModules()
     {
+        fireRateRPM = baseFireRateRPM;
+        heatPerShot = baseHeatPerShot;
+        energyCostPerShot = baseEnergyCostPerShot;
+        energyCostPerSecond = baseEnergyCostPerSecond;
+
+        projectileSpeedMultiplier = 1f;
+        projectileLifetimeMultiplier = 1f;
+        heatMultiplier = 1f;
+        weaponSpread = 0f;
+
         WeaponModuleBase[] nearbyModules = GetComponentsInChildren<WeaponModuleBase>();
-        Debug.Log($"[WeaponBase] Scanning for modules... found {nearbyModules.Length}");
         foreach (var module in nearbyModules)
         {
             module.SetWeapon(this);
-            Debug.Log($"[WeaponBase] Applying module (child): {module.name}");
             module.ApplyModuleEffect();
         }
 
@@ -158,25 +177,42 @@ public abstract class WeaponBase : DamageableTileBase
             return;
         }
 
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up,
-            Vector2Int.down,
-            Vector2Int.left,
-            Vector2Int.right
-        };
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+        Queue<TileSlot> queue = new Queue<TileSlot>();
+        queue.Enqueue(weaponSlot);
 
-        foreach (var dir in directions)
+        while (queue.Count > 0)
         {
-            TileSlot neighbor = gridManager.GetSlotAt(weaponSlot.gridPosition + dir);
-            if (neighbor != null && neighbor.currentComponent != null)
+            TileSlot current = queue.Dequeue();
+            if (!visited.Add(current.gridPosition)) continue;
+
+            if (current != weaponSlot && current.currentComponent != null)
             {
-                WeaponModuleBase mod = neighbor.currentComponent.GetComponent<WeaponModuleBase>();
+                WeaponModuleBase mod = current.currentComponent.GetComponent<WeaponModuleBase>();
                 if (mod != null)
                 {
                     mod.SetWeapon(this);
-                    Debug.Log($"[WeaponBase] Applying module (adjacent): {mod.name}");
                     mod.ApplyModuleEffect();
+                }
+            }
+
+            Vector2Int[] directions = new Vector2Int[]
+            {
+                Vector2Int.up,
+                Vector2Int.down,
+                Vector2Int.left,
+                Vector2Int.right
+            };
+
+            foreach (var dir in directions)
+            {
+                TileSlot neighbor = gridManager.GetSlotAt(current.gridPosition + dir);
+                if (neighbor != null && neighbor.currentComponent != null && !visited.Contains(neighbor.gridPosition))
+                {
+                    if (neighbor == weaponSlot || neighbor.currentComponent.type == TileType.WeaponSupport)
+                    {
+                        queue.Enqueue(neighbor);
+                    }
                 }
             }
         }
@@ -187,49 +223,40 @@ public abstract class WeaponBase : DamageableTileBase
     public virtual void ModifyAccuracy(float amount)
     {
         weaponSpread = Mathf.Max(weaponSpread - amount, 0f);
-        Debug.Log($"[WeaponBase] Accuracy modified. New spread: {weaponSpread}");
     }
 
     public virtual void ModifyFireRate(float multiplier)
     {
-        Debug.Log($"[WeaponBase] Modifying fire rate. Old: {fireRateRPM}, Multiplier: {multiplier}");
         fireRateRPM *= multiplier;
-        Debug.Log($"[WeaponBase] New fire rate: {fireRateRPM}");
     }
 
     public virtual void ModifyProjectileSpeed(float multiplier)
     {
         projectileSpeedMultiplier *= multiplier;
-        Debug.Log($"[WeaponBase] Projectile speed multiplier set to: {projectileSpeedMultiplier}");
     }
 
     public virtual void ModifyLifetime(float multiplier)
     {
         projectileLifetimeMultiplier *= multiplier;
-        Debug.Log($"[WeaponBase] Projectile lifetime multiplier set to: {projectileLifetimeMultiplier}");
     }
 
     public virtual void ModifyHeatMultiplier(float multiplier)
     {
         heatMultiplier *= multiplier;
-        Debug.Log($"[WeaponBase] Heat multiplier set to: {heatMultiplier}");
     }
 
     public virtual void ModifyHeatFlat(float amount)
     {
         heatPerShot += amount;
-        Debug.Log($"[WeaponBase] Heat per shot now: {heatPerShot}");
     }
 
     public virtual void ModifyEnergyCostPerSecond(float amount)
     {
         energyCostPerSecond += amount;
-        Debug.Log($"[WeaponBase] Energy cost per second now: {energyCostPerSecond}");
     }
 
     public virtual void ModifyEnergyCostPerShot(float amount)
     {
         energyCostPerShot += amount;
-        Debug.Log($"[WeaponBase] Energy cost per shot now: {energyCostPerShot}");
     }
 } 

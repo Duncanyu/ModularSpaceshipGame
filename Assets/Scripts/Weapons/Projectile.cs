@@ -12,13 +12,6 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Implement collision damage logic here
-        // Example placeholder:
-        // if (collision.CompareTag("Enemy"))
-        // {
-        //     collision.GetComponent<Enemy>().TakeDamage(damage);
-        //     Destroy(gameObject);
-        // }
     }
 
     public void Initialize(float weaponDamage)

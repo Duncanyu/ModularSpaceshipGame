@@ -12,7 +12,8 @@ public class ProjectileWeapon : WeaponBase
         GameObject projectile = Instantiate(projectilePrefab, transform.position, transform.rotation);
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
 
-        Vector2 projectileForce = transform.up * projectileSpeed;
+        float finalSpeed = projectileSpeed * projectileSpeedMultiplier;
+        Vector2 projectileForce = transform.up * finalSpeed;
         rb.AddForce(projectileForce, ForceMode2D.Impulse);
         rb.gravityScale = projectileGravity;
 
@@ -21,5 +22,7 @@ public class ProjectileWeapon : WeaponBase
         {
             projComponent.Initialize(damage);
         }
+
+        Debug.Log("[ProjectileWeapon] Fired with speed: " + finalSpeed);
     }
 }

@@ -151,8 +151,8 @@ MonoBehaviour:
   moduleType: 0
   lifetimeMultiplier: 2
   accuracyBonus: 0
-  fireRateMultiplier: 0.7
-  projectileSpeedMultiplier: 0.2
+  fireRateMultiplier: 0.6
+  projectileSpeedMultiplier: 0.05
   heatBonus: 0
   laserHeatMultiplier: 1
   laserRangeBonus: 0
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b916fe9c42beb094eb0d52166707be8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  componentName: 
+  componentName: Bassic Barrel
   size: {x: 1, y: 1}
   type: 0
-  uiIcon: {fileID: 0}
+  uiIcon: {fileID: -4622177925855600731, guid: f477941875d8a3e4a90bf392475b0e60, type: 3}
