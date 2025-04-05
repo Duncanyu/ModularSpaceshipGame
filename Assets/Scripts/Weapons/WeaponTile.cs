@@ -35,6 +35,7 @@ public class WeaponTile : TileComponent
 
         if (weapon != null)
         {
+            weapon.AssignSlot(AssignedSlot);
             weapon.transform.rotation = transform.rotation;
         }
     }
